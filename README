@@ -4,4 +4,4 @@ Create virtual hosts using Apache on Linux-based system
 
 How to use:
 
-Exemple: $ sudo ./vhc.sh /var/www/ localhost.project directoryproject
+Example: $ sudo ./vhc.sh /var/www/ localhost.project directoryproject
