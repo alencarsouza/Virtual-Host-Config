@@ -6,14 +6,20 @@
 
 # suggestions of feedback? reach me at junior.holowka@gmail.com
 
-# latest update 17/February/2012
+# latest update 14/Jun/2012
 
 #################################################################################
 # path="/home/user/Workspace/" > your workspace or htdocs                       #
 # host="localhost.project"     > /etc/hosts - (Ex: 127.0.0.1 localhost.project) #
 # dir="project"                > /home/user/Workspace/project                   #
-# paramn="/app/webroot"        > some framework paramn                          #
+# paramn="/app/webroot"        > some framework root                            #
 #################################################################################
+
+# check for root
+if [ "$(id -u)" != "0" ]; then
+   echo "You must run this script as root" 1>&2
+   exit 1
+fi
 
 path="$1"
 host="$2"
@@ -28,23 +34,26 @@ echo ""
 echo -e "\033[1m> Criando $host em /etc/apache2/sites-available ...\033[0m\n"
 	sudo touch /etc/apache2/sites-available/$host
 
-	sudo sh -c 'echo "<VirtualHost *:80>" >> /etc/apache2/sites-available/'${host}''
-	sudo sh -c 'echo "ServerName '${host}'" >> /etc/apache2/sites-available/'${host}''
-	sudo sh -c 'echo "ServerAdmin webmaster@localhost" >> /etc/apache2/sites-available/'${host}''
-	sudo sh -c 'echo "ServerSignature Off" >> /etc/apache2/sites-available/'${host}''
-	sudo sh -c 'echo "LogLevel warn" >> /etc/apache2/sites-available/'${host}''
-	sudo sh -c 'echo "CustomLog /var/log/apache2/'${host}'-access.log combined" >> /etc/apache2/sites-available/'${host}''
-	sudo sh -c 'echo "ErrorLog /var/log/apache2/'${host}'-error.log" >> /etc/apache2/sites-available/'${host}''
-	
-	sudo sh -c 'echo "DocumentRoot '${path}''${dir}''${paramn}'" >> /etc/apache2/sites-available/'${host}''
-	sudo sh -c 'echo "<Directory '${path}''${dir}'>" >> /etc/apache2/sites-available/'${host}''
-	sudo sh -c 'echo "Options Indexes FollowSymLinks MultiViews" >> /etc/apache2/sites-available/'${host}''
-	sudo sh -c 'echo "AllowOverride All" >> /etc/apache2/sites-available/'${host}''
-	sudo sh -c 'echo "Order allow,deny" >> /etc/apache2/sites-available/'${host}''
-	sudo sh -c 'echo "allow from all" >> /etc/apache2/sites-available/'${host}''
-	sudo sh -c 'echo "</Directory>" >> /etc/apache2/sites-available/'${host}''
+cat > /etc/apache2/sites-available/$host<<EOF
+<VirtualHost *:80>
+	ServerName $host
+	ServerSignature Off
+	DocumentRoot $path$dir$paramn
+	ErrorLog     $path$dir/logging/apache-error_log
+	CustomLog    $path$dir/logging/apache-access_log common
 
-	sudo sh -c 'echo "</VirtualHost>" >> /etc/apache2/sites-available/'${host}''
+	<Directory "$path$dir">
+		<IfModule mod_rewrite.c>
+			RewriteEngine On
+			RewriteBase /
+			RewriteRule ^index\.php- [L]
+			RewriteCond %{REQUEST_FILENAME} !-f
+			RewriteCond %{REQUEST_FILENAME} !-d
+			RewriteRule . /index.php [L]
+		</IfModule>
+	</Directory>
+</VirtualHost>
+EOF
 
 echo ""
 
@@ -70,7 +79,4 @@ echo -e "\033[1m> Reiniciando o Apache ...\033[0m\n"
 echo ""
 
 echo -e "\033[1m> Virtual Host criado com sucesso! ...\033[0m\n"
-
-
-
 
