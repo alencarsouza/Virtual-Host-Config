@@ -37,12 +37,11 @@ echo -e "\033[1m> Criando $host em /etc/apache2/sites-available ...\033[0m\n"
 cat > /etc/apache2/sites-available/$host<<EOF
 <VirtualHost *:80>
 	ServerName $host
-	ServerSignature Off
 	DocumentRoot $path$dir$paramn
-	ErrorLog     $path$dir/logging/apache-error_log
-	CustomLog    $path$dir/logging/apache-access_log common
+	ErrorLog     /var/log/apache2/$host-error.log
+	CustomLog    /var/log/apache2/$host-access.log common
 
-	<Directory "$path$dir">
+	<Directory "$path$dir$paramn">
 		<IfModule mod_rewrite.c>
 			RewriteEngine On
 			RewriteBase /
