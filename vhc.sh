@@ -8,12 +8,12 @@
 
 # latest update 14/Jun/2012
 
-#################################################################################
-# path="/home/user/Workspace/" > your workspace or htdocs                       #
-# host="localhost.project"     > /etc/hosts - (Ex: 127.0.0.1 localhost.project) #
-# dir="project"                > /home/user/Workspace/project                   #
-# paramn="/app/webroot"        > some framework root                            #
-#################################################################################
+################################################################################
+# path="/home/user/Workspace/" > your workspace or htdocs                      #
+# host="domain.com"            > /etc/hosts - (Ex: 127.0.0.1 domain.com)       #
+# dir="domain.com"             > /home/user/Workspace/domain.com               #
+# paramn="/app/webroot"        > some framework root                           #
+################################################################################
 
 # check for root
 if [ "$(id -u)" != "0" ]; then
@@ -32,7 +32,7 @@ echo -e "\033[1m> Criando referencia $host no arquivo /etc/hosts ...\033[0m\n"
 echo ""
 
 echo -e "\033[1m> Criando $host em /etc/apache2/sites-available ...\033[0m\n"
-	sudo touch /etc/apache2/sites-available/$host
+	sudo touch /etc/apache2/sites-available/$host.conf
 
 cat > /etc/apache2/sites-available/$host<<EOF
 <VirtualHost *:80>
